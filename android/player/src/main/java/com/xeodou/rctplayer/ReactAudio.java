@@ -251,13 +251,16 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
     @ReactMethod
     public void startRecording() {
         mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName += "/audiorecordtest.3gp";
+        mFileName += "/test.m4a";
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        mRecorder.setAudioChannels(1);
+        mRecorder.setAudioSamplingRate(22050);
+        //mRecorder.setAudioEncodingBitRate(96000);
         mRecorder.setOutputFile(mFileName);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         try {
             mRecorder.prepare();
