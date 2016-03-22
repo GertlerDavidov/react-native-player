@@ -9,6 +9,11 @@ package com.xeodou.rctplayer;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
+import android.media.MediaRecorder;
+import android.media.MediaPlayer;
+import android.os.Environment;
+import android.util.Log;
+import java.io.IOException;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -37,10 +42,14 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
     private static final int BUFFER_SEGMENT_SIZE = 64 * 1024;
     private static final int BUFFER_SEGMENT_COUNT = 256;
 
-
     private ExoPlayer player = null;
     private PlayerControl playerControl = null;
     private ReactApplicationContext context;
+
+    private static final String LOG_TAG = "AudioRecord";
+    private static String mFileName = null;
+    private MediaRecorder mRecorder = null;
+    private MediaPlayer   mPlayer = null;
 
     public ReactAudio(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -219,5 +228,50 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
         WritableMap params = Arguments.createMap();
         params.putString("msg", error.getMessage());
         sendEvent("error", params);
+    }
+
+    @ReactMethod
+    public void startPlaying() {
+        mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(mFileName);
+            mPlayer.prepare();
+            mPlayer.start();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "prepare() failed");
+        }
+    }
+
+    @ReactMethod
+    public void stopPlaying() {
+        mPlayer.release();
+        mPlayer = null;
+    }
+
+    @ReactMethod
+    public void startRecording() {
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+        mFileName += "/audiorecordtest.3gp";
+
+        mRecorder = new MediaRecorder();
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mRecorder.setOutputFile(mFileName);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            mRecorder.prepare();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "prepare() failed");
+        }
+
+        mRecorder.start();
+    }
+
+    @ReactMethod
+    public void stopRecording() {
+        mRecorder.stop();
+        mRecorder.release();
+        mRecorder = null;
     }
 }
