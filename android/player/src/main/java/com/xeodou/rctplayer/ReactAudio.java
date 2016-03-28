@@ -133,57 +133,66 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
 
     @ReactMethod
     public void start() {
-        Assertions.assertNotNull(player);
-        playerControl.start();
+        if (player != null ) {
+            playerControl.start();
+        }
     }
 
     @ReactMethod
     public void pause() {
-        Assertions.assertNotNull(player);
-        playerControl.pause();
+        if (player != null ) {
+            playerControl.pause();
+        }
     }
 
     @ReactMethod
     public void resume() {
-        Assertions.assertNotNull(player);
-        playerControl.start();
+        if (player != null ) {
+            playerControl.start();
+        }
     }
 
     @ReactMethod
     public void isPlaying(Callback cb) {
-        Assertions.assertNotNull(player);
-        cb.invoke(playerControl.isPlaying());
+        if (player != null ) {
+            cb.invoke(playerControl.isPlaying());
+        }
     }
 
     @ReactMethod
     public void getDuration(Callback cb) {
-        Assertions.assertNotNull(player);
-        cb.invoke(playerControl.getDuration());
+        if (player != null ) {
+            cb.invoke(playerControl.getDuration());
+        }
     }
 
     @ReactMethod
     public void getCurrentPosition(Callback cb) {
-        Assertions.assertNotNull(player);
-        cb.invoke(playerControl.getCurrentPosition());
+        if (player != null ) {
+            cb.invoke(playerControl.getCurrentPosition());
+        }
     }
 
     @ReactMethod
     public void getBufferPercentage(Callback cb) {
-        Assertions.assertNotNull(player);
-        cb.invoke(playerControl.getBufferPercentage());
+        if (player != null ) {
+            cb.invoke(playerControl.getBufferPercentage());
+        }
     }
 
     @ReactMethod
     public void stop() {
-        Assertions.assertNotNull(player);
-        player.release();
-        player = null;
+        if (player != null ) {
+            player.release();
+            player = null;
+        }
     }
 
     @ReactMethod
     public void seekTo(int timeMillis) {
-        Assertions.assertNotNull(player);
-        playerControl.seekTo(timeMillis);
+        if (player != null ) {
+            playerControl.seekTo(timeMillis);
+        }
     }
 
     @Override
@@ -244,14 +253,20 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
 
     @ReactMethod
     public void stopPlaying() {
-        mPlayer.release();
-        mPlayer = null;
+        if (mPlayer != null ) {
+            mPlayer.release();
+            mPlayer = null;
+        }
     }
 
     @ReactMethod
     public void startRecording() {
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName += "/test.m4a";
+        try {
+            mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+            mFileName += "/test.m4a";
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "getExternalStorageDirectory() failed");
+        }
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -273,8 +288,10 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
 
     @ReactMethod
     public void stopRecording() {
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
+        if (mRecorder != null ) {
+            mRecorder.stop();
+            mRecorder.release();
+            mRecorder = null;
+        }
     }
 }
