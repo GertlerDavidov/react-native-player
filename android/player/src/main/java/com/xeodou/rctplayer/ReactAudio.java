@@ -274,7 +274,7 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mRecorder.setAudioChannels(1);
         mRecorder.setAudioSamplingRate(22050);
-        //mRecorder.setAudioEncodingBitRate(96000);
+        mRecorder.setAudioEncodingBitRate(31000);
         mRecorder.setOutputFile(mFileName);
 
         try {
