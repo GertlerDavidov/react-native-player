@@ -261,6 +261,10 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
 
     @ReactMethod
     public void startRecording() {
+         if (mRecorder != null ) {
+            mRecorder.release();
+            mRecorder = null;
+        }
         try {
             mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
             mFileName += "/test.m4a";
