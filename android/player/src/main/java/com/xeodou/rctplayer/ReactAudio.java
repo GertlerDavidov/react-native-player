@@ -335,9 +335,14 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
         recordAmplitude.cancel(true);
         Log.d("TEST", "Result " + recordingAmp );
         if (mRecorder != null ) {
-            mRecorder.stop();
-            mRecorder.release();
-            mRecorder = null;
+            try {
+                mRecorder.stop();
+                mRecorder.release();
+                mRecorder = null;
+            }  catch (Exception e) {
+                Log.d(LOG_TAG, "stop() failed");
+            }
+
         }
     }
 
