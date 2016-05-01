@@ -13,9 +13,9 @@ import android.media.MediaRecorder;
 import android.media.MediaPlayer;
 import android.os.Environment;
 import android.util.Log;
+
 import java.io.IOException;
 
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -41,6 +41,7 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
 
     private static final int BUFFER_SEGMENT_SIZE = 64 * 1024;
     private static final int BUFFER_SEGMENT_COUNT = 256;
+    private static final int SILENT_CHECK = 0;
 
     private ExoPlayer player = null;
     private PlayerControl playerControl = null;
@@ -51,6 +52,33 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
     private MediaRecorder mRecorder = null;
     private MediaPlayer   mPlayer = null;
 
+    RecordAmplitude recordAmplitude;
+    boolean isRecording = false;
+    public int recordingAmp = 0;
+    public int recordingDur = 0;
+
+    private class RecordAmplitude extends android.os.AsyncTask<Void, Integer, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            while (isRecording) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                publishProgress(mRecorder.getMaxAmplitude());
+            }
+            return null;
+        }
+        protected void onProgressUpdate(Integer... progress) {
+           int result;
+            result = progress[0];
+            recordingAmp = recordingAmp + result;
+            recordingDur++;
+
+        }
+    }
+
     public ReactAudio(ReactApplicationContext reactContext) {
         super(reactContext);
         this.context = reactContext;
@@ -60,6 +88,7 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
     public String getName() {
         return REACT_CLASS;
     }
+
 
     private void sendEvent(String eventName,
                            @Nullable WritableMap params) {
@@ -259,8 +288,12 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
         }
     }
 
+
+
     @ReactMethod
     public void startRecording() {
+
+
          if (mRecorder != null ) {
             mRecorder.release();
             mRecorder = null;
@@ -288,14 +321,31 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
         }
 
         mRecorder.start();
+        recordingAmp = 0;
+        recordingDur = 0;
+        isRecording = true;
+        recordAmplitude = new RecordAmplitude();
+        recordAmplitude.execute();
     }
 
     @ReactMethod
     public void stopRecording() {
+        Log.i(LOG_TAG, "-> STOP vv RECORDING -> Total sec: " + recordingDur + " Sum Amp: " + recordingAmp);
+        isRecording = false;
+        recordAmplitude.cancel(true);
+        Log.d("TEST", "Result " + recordingAmp );
         if (mRecorder != null ) {
             mRecorder.stop();
             mRecorder.release();
             mRecorder = null;
         }
     }
+
+    @ReactMethod
+    public void silentCheck( Callback cb) {
+        int silent =  Math.round( recordingAmp / recordingDur );
+        cb.invoke(silent);
+    }
+
+
 }
