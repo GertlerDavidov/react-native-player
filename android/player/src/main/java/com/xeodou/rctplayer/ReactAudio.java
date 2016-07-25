@@ -303,8 +303,8 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
             mFileName += "/helloRecording.m4a";
             
             File existFile = new File(filePathString);
-            if(f.exists() && !f.isDirectory()) { 
-                file.delete();
+            if(existFile.exists() && !existFile.isDirectory()) { 
+                existFile.delete();
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "getExternalStorageDirectory() failed");
