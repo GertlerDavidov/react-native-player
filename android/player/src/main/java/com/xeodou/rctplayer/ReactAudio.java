@@ -14,7 +14,7 @@ import android.media.MediaPlayer;
 import android.os.Environment;
 import android.util.Log;
 
-import java.io.IOException;
+import java.io.*;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -300,7 +300,12 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
         }
         try {
             mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-            mFileName += "/test.m4a";
+            mFileName += "/helloRecording.m4a";
+            
+            File existFile = new File(filePathString);
+            if(f.exists() && !f.isDirectory()) { 
+                file.delete();
+            }
         } catch (Exception e) {
             Log.e(LOG_TAG, "getExternalStorageDirectory() failed");
         }
