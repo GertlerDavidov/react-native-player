@@ -298,7 +298,7 @@ public class ReactAudio extends ReactContextBaseJavaModule implements ExoPlayer.
 
                 sendEvent("onUpdatePosition", params);
             }
-        }, 500);
+        }, 100);
     }
 
     /**
